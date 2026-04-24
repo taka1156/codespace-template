@@ -9,7 +9,6 @@
         },
         "vscodeExtensions": [
             "MS-CEINTL.vscode-language-pack-ja",
-            "GitHub.copilot",
             "streetsidesoftware.code-spell-checker",
             "username.errorlens"
         ]
@@ -27,20 +26,20 @@
         ]
     },
     "node:biome": {
-        "image": "node:22-alpine",
+        "image": "node:24-alpine",
         "vscodeExtensions": [
             "biomejs.biome"
         ]
     },
     "node:eslint": {
-        "image": "node:22-alpine",
+        "image": "node:24-alpine",
         "vscodeExtensions": [
             "dbaeumer.vscode-eslint",
             "esbenp.prettier-vscode"
         ]
     },
     "node:react": {
-        "image": "node:22-alpine",
+        "image": "node:24-alpine",
         "vscodeExtensions": [
             "jawandarajbir.react-vscode-extension-pack",
             "dbaeumer.vscode-eslint",
@@ -66,6 +65,13 @@
         "install": "apt install -y gcc make git binutils libc6-dev",
         "vscodeExtensions": [
             "ms-vscode.cpptools"
+        ]
+    },
+    "node:zenn": {
+        "image": "node:24-alpine",
+        "install": "yarn global add zenn-cli textlint markdownlint",
+        "vscodeExtensions": [
+            "zenn.zenn-preview"
         ]
     }
 }
