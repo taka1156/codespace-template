@@ -10,7 +10,7 @@
     "vscodeExtensions": [
       "MS-CEINTL.vscode-language-pack-ja",
       "streetsidesoftware.code-spell-checker",
-      "username.errorlens"
+      "usernamehw.errorlens"
     ]
   },
   "langs": [
@@ -19,6 +19,28 @@
       "image": "golang:1.26-alpine",
       "vscodeExtensions": [
         "golang.GO"
+      ]
+    },
+    {
+      "profileName": "rust",
+      "image": "rust:1.72-alpine",
+      "vscodeExtensions": [
+        "Zerotaskx.rust-extension-pack"
+      ]
+    },
+    {
+      "profileName": "zig",
+      "image": "zig:0.13.0-alpine",
+      "vscodeExtensions": [
+        "ziglang.vscode-zig"
+      ]
+    },
+    {
+      "profileName": "moonbit",
+      "image": "ubuntu:24.04",
+      "runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
+      "vscodeExtensions": [
+        "moonbit.moonbit-lang"
       ]
     },
     {
@@ -51,21 +73,6 @@
         "dbaeumer.vscode-eslint",
         "stylelint.vscode-stylelint",
         "esbenp.prettier-vscode"
-      ]
-    },
-    {
-      "profileName": "rust",
-      "image": "rust:1.72-alpine",
-      "vscodeExtensions": [
-        "Zerotaskx.rust-extension-pack"
-      ]
-    },
-    {
-      "profileName": "moonbit",
-      "image": "ubuntu:24.04",
-      "runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
-      "vscodeExtensions": [
-        "moonbit.moonbit-lang"
       ]
     },
     {
