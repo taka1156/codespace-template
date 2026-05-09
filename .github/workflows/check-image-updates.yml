@@ -2,7 +2,7 @@ name: Check Image Updates
 
 on:
   schedule:
-    - cron: '0 0 * * 1'  # 毎週月曜 00:00 UTC
+    - cron: 0 17 */3 * * # JST 0:00 (every 3 days)
   workflow_dispatch:
 
 jobs:
