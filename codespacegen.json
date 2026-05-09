@@ -16,7 +16,7 @@
   "langs": [
     {
       "profileName": "go",
-      "image": "golang:1.24-alpine",
+      "image": "golang:1.26-alpine",
       "vscodeExtensions": [
         "golang.GO"
       ]

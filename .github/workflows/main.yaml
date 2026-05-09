@@ -1,0 +1,36 @@
+name: Generate Codespaces
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'codespacegen.json'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install codespacegen
+        run: curl -fsSL https://raw.githubusercontent.com/taka1156/codespacegen/master/scripts/install.sh | bash
+
+      - name: Generate devcontainer files
+        run: bash scripts/generate.sh
+
+      - name: Push to dist branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B dist
+          git add .
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "chore: generate devcontainer files from codespacegen.json"
+          git push origin dist --force
