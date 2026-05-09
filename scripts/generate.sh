@@ -2,12 +2,13 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG="${SCRIPT_DIR}/codespacegen.json"
+REPO_ROOT="${SCRIPT_DIR}/.."
+CONFIG="${REPO_ROOT}/codespacegen.json"
 
 while IFS= read -r profile; do
   echo "Generating for profile: $profile"
   codespacegen \
-    -output "${SCRIPT_DIR}/${profile}" \
+    -output "${REPO_ROOT}/sample_devcontainer/${profile}" \
     -name "$profile" \
     -language "$profile" \
     -service app \
