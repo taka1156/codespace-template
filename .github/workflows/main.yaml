@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'codespacegen.json'
+  workflow_dispatch:
 
 jobs:
   generate:
@@ -30,6 +31,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -B dist
+          git add -f sample_devcontainer/
           git add .
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "chore: generate devcontainer files from codespacegen.json"
