@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/configuration-editing/schemas/devContainer.vscode.schema.json",
+  "name": "gcc",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "dockerComposeFile": "docker-compose.yaml",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "MS-CEINTL.vscode-language-pack-ja",
+        "streetsidesoftware.code-spell-checker",
+        "usernamehw.errorlens",
+        "ms-vscode.cpptools"
+      ]
+    }
+  }
+}
