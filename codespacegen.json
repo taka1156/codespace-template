@@ -76,6 +76,18 @@
       ]
     },
     {
+      "profileName": "node:astro",
+      "image": "node:24-alpine",
+      "runCommand": "corepack enable && corepack prepare pnpm@latest --activate",
+      "vscodeExtensions": [
+        "astro-build.astro-vscode",
+        "biomejs.biome",
+        "formulahendry.auto-rename-tag",
+        "yoavbls.pretty-ts-errors",
+        "capsaskey.vscode-vanilla-extract"
+      ]
+    },
+    {
       "profileName": "gcc",
       "image": "ubuntu:24.04",
       "linuxPackages": [
