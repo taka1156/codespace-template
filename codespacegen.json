@@ -16,14 +16,14 @@
   "langs": [
     {
       "profileName": "go",
-      "image": "golang:1.26-alpine",
+      "image": "golang:1.27-alpine",
       "vscodeExtensions": [
         "golang.GO"
       ]
     },
     {
       "profileName": "rust",
-      "image": "rust:1.72-alpine",
+      "image": "rust:1.98-alpine",
       "vscodeExtensions": [
         "Zerotaskx.rust-extension-pack"
       ]
@@ -37,29 +37,29 @@
     },
     {
       "profileName": "moonbit",
-      "image": "ubuntu:24.04",
-      "runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash",
+      "image": "ubuntu:26.10",
       "vscodeExtensions": [
         "moonbit.moonbit-lang"
-      ]
+      ],
+      "runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash"
     },
     {
       "profileName": "python",
-      "image": "python:3.12-alpine",
+      "image": "python:3.14-alpine",
       "vscodeExtensions": [
         "ms-python.python"
       ]
     },
     {
       "profileName": "node:biome",
-      "image": "node:24-alpine",
+      "image": "node:26-alpine",
       "vscodeExtensions": [
         "biomejs.biome"
       ]
     },
     {
       "profileName": "node:eslint",
-      "image": "node:24-alpine",
+      "image": "node:26-alpine",
       "vscodeExtensions": [
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode"
@@ -67,7 +67,7 @@
     },
     {
       "profileName": "node:react",
-      "image": "node:24-alpine",
+      "image": "node:26-alpine",
       "vscodeExtensions": [
         "jawandarajbir.react-vscode-extension-pack",
         "dbaeumer.vscode-eslint",
@@ -77,36 +77,36 @@
     },
     {
       "profileName": "node:astro",
-      "image": "node:24-alpine",
-      "runCommand": "corepack enable && corepack prepare pnpm@latest --activate",
+      "image": "node:26-alpine",
       "vscodeExtensions": [
         "astro-build.astro-vscode",
         "biomejs.biome",
         "formulahendry.auto-rename-tag",
         "yoavbls.pretty-ts-errors",
         "capsaskey.vscode-vanilla-extract"
-      ]
+      ],
+      "runCommand": "corepack enable \u0026\u0026 corepack prepare pnpm@latest --activate"
     },
     {
       "profileName": "gcc",
-      "image": "ubuntu:24.04",
+      "image": "ubuntu:26.10",
+      "vscodeExtensions": [
+        "ms-vscode.cpptools"
+      ],
       "linuxPackages": [
         "gcc",
         "make",
         "binutils",
         "libc6-dev"
-      ],
-      "vscodeExtensions": [
-        "ms-vscode.cpptools"
       ]
     },
     {
       "profileName": "node:zenn",
-      "image": "node:24-alpine",
-      "runCommand": "yarn global add zenn-cli textlint markdownlint",
+      "image": "node:26-alpine",
       "vscodeExtensions": [
         "zenn.zenn-preview"
-      ]
+      ],
+      "runCommand": "yarn global add zenn-cli textlint markdownlint"
     }
   ]
 }
