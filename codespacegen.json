@@ -16,23 +16,16 @@
   "langs": [
     {
       "profileName": "go",
-      "image": "golang:1.27-alpine",
+      "image": "golang:1.27",
       "vscodeExtensions": [
         "golang.GO"
       ]
     },
     {
       "profileName": "rust",
-      "image": "rust:1.99-alpine",
+      "image": "rust:1.99-slim",
       "vscodeExtensions": [
         "Zerotaskx.rust-extension-pack"
-      ]
-    },
-    {
-      "profileName": "zig",
-      "image": "zig:0.13.0-alpine",
-      "vscodeExtensions": [
-        "ziglang.vscode-zig"
       ]
     },
     {
@@ -45,21 +38,21 @@
     },
     {
       "profileName": "python",
-      "image": "python:3.15-alpine",
+      "image": "python:3.15-slim",
       "vscodeExtensions": [
         "ms-python.python"
       ]
     },
     {
       "profileName": "node:biome",
-      "image": "node:26-alpine",
+      "image": "node:26-slim",
       "vscodeExtensions": [
         "biomejs.biome"
       ]
     },
     {
       "profileName": "node:eslint",
-      "image": "node:26-alpine",
+      "image": "node:26-slim",
       "vscodeExtensions": [
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode"
@@ -67,7 +60,7 @@
     },
     {
       "profileName": "node:react",
-      "image": "node:26-alpine",
+      "image": "node:26-slim",
       "vscodeExtensions": [
         "jawandarajbir.react-vscode-extension-pack",
         "dbaeumer.vscode-eslint",
@@ -77,7 +70,7 @@
     },
     {
       "profileName": "node:astro",
-      "image": "node:26-alpine",
+      "image": "node:26-slim",
       "vscodeExtensions": [
         "astro-build.astro-vscode",
         "biomejs.biome",
@@ -102,7 +95,7 @@
     },
     {
       "profileName": "node:zenn",
-      "image": "node:26-alpine",
+      "image": "node:26-slim",
       "vscodeExtensions": [
         "zenn.zenn-preview"
       ],
