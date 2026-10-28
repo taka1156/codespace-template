@@ -14,7 +14,7 @@
 #   curl -fsSL <raw URL> | bash -s -- <language>
 #
 # Environment variables:
-#   DEST_DIR  Destination directory (default: current directory)
+#   DEST_DIR  Project root; templates go into <DEST_DIR>/.devcontainer (default: current directory)
 
 set -euo pipefail
 
@@ -145,7 +145,13 @@ done
 # --- 5. Copy to a staging directory and rewrite devcontainer.json ---
 STAGE_DIR="$TMP_DIR/stage"
 mkdir -p "$STAGE_DIR"
-cp -a "$SAMPLE_ROOT/$LANG_NAME/." "$STAGE_DIR/"
+# The template files go into .devcontainer as-is. If the language directory
+# already wraps them in a .devcontainer folder, use that folder as the source.
+SRC_DIR="$SAMPLE_ROOT/$LANG_NAME"
+if [ -d "$SRC_DIR/.devcontainer" ]; then
+  SRC_DIR="$SRC_DIR/.devcontainer"
+fi
+cp -a "$SRC_DIR/." "$STAGE_DIR/"
 
 # Escape for a JSON string (\ and ")
 ESCAPED_NAME="${PROJECT_NAME//\\/\\\\}"
@@ -176,19 +182,21 @@ else
   done
 fi
 
-# --- 6. Place the files in the destination ---
+# --- 6. Place the files in <DEST_DIR>/.devcontainer ---
+TARGET_DIR="$DEST_DIR/.devcontainer"
 mkdir -p "$DEST_DIR"
 
-if [ -e "$DEST_DIR/.devcontainer" ] && [ -e "$STAGE_DIR/.devcontainer" ]; then
-  read -r -p "$DEST_DIR/.devcontainer already exists. Overwrite? [y/N]: " ANSWER < /dev/tty
+if [ -e "$TARGET_DIR" ]; then
+  read -r -p "$TARGET_DIR already exists. Overwrite? [y/N]: " ANSWER < /dev/tty
   case "$ANSWER" in
-    [yY]*) ;;
+    [yY]*) rm -rf "$TARGET_DIR" ;;
     *) echo "Aborted."; exit 1 ;;
   esac
 fi
 
-cp -a "$STAGE_DIR/." "$DEST_DIR/"
+mkdir -p "$TARGET_DIR"
+cp -a "$STAGE_DIR/." "$TARGET_DIR/"
 
 echo
 echo "Done: language='$LANG_NAME' / project name='$PROJECT_NAME'"
-echo "Destination: $(cd "$DEST_DIR" && pwd)"
+echo "Destination: $(cd "$TARGET_DIR" && pwd)"
