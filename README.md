@@ -4,11 +4,11 @@
 
 **Build, maintain, and share your own Dev Container templates.**
 
-DevContainer Kit is a forkable home for generating, maintaining, and distributing Dev Container templates with [codespacegen](https://github.com/taka1156/codespacegen), GitHub Actions, and a simple setup script. Use the published templates as-is, or fork the repository to build your own collection. Templates work with local VS Code Dev Containers and GitHub Codespaces.
+codespace-template is a forkable home for generating, maintaining, and distributing Dev Container templates with [codespacegen](https://github.com/taka1156/codespacegen), GitHub Actions, and a simple setup script. Use the published templates as-is, or fork the repository to build your own collection. Templates work with local VS Code Dev Containers and GitHub Codespaces.
 
 **You do not need to install `codespacegen` to use a template.** Run the setup script hosted in this repository, select a language, and copy the generated configuration into your project.
 
-## Two ways to use DevContainer Kit
+## Two ways to use codespace-template
 
 - **Use a template:** Run the setup script and select a language. No `codespacegen` installation is needed.
 - **Build your own collection:** Fork this repository, customize the generator configuration and workflows, and publish your own templates to a distribution branch.
@@ -60,7 +60,7 @@ The fork is independent: it can manage different languages, image versions, and 
 ## How it works
 
 ```text
-DevContainer Kit (source branch: master)
+codespace-template (source branch: master)
 ├── codespacegen.json            Configuration for template generation
 ├── .github/workflows/           GitHub Actions workflows
 └── scripts/
@@ -68,7 +68,7 @@ DevContainer Kit (source branch: master)
           |
           | GitHub Actions / codespacegen
           v
-DevContainer Kit (distribution branch: dist)
+codespace-template (distribution branch: dist)
 └── sample_devcontainer/
     ├── <language-a>/
     ├── <language-b>/
@@ -82,7 +82,7 @@ Your project
     └── ... other generated files
 ```
 
-**Roles:** `codespacegen` generates configurations; DevContainer Kit maintains and distributes them; the setup script installs selected templates into projects.
+**Roles:** `codespacegen` generates configurations; codespace-template maintains and distributes them; the setup script installs selected templates into projects.
 
 `codespacegen` is responsible for generating Dev Container configurations, while this repository distributes ready-made templates. GitHub Actions automates template generation/publication and periodically checks base-image versions for updates. The exact schedule and update behavior are defined by the workflow files.
 
@@ -96,7 +96,7 @@ After installation, open your project with VS Code and a Dev Containers-compatib
 
 ## Repository naming
 
-The commands above currently use the existing `taka1156/codespace-template` repository URL. **DevContainer Kit** is the project name; if the GitHub repository is renamed, update the URLs and script defaults accordingly.
+The commands above currently use the existing `taka1156/codespace-template` repository URL. **codespace-template** is the project name; if the GitHub repository is renamed, update the URLs and script defaults accordingly.
 
 ## Related project
 

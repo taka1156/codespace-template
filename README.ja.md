@@ -4,7 +4,7 @@
 
 **自分だけの Dev Container テンプレートを作成・管理・配布するためのツールキット。**
 
-DevContainer Kit は、[codespacegen](https://github.com/taka1156/codespacegen)・GitHub Actions・導入用 Shell Script を組み合わせて Dev Container テンプレートを管理・配布するためのリポジトリです。そのままテンプレートを使うだけでなく、**Fork して自分専用のテンプレート集を構築**できます。ローカルの VS Code と GitHub Codespaces の両方を想定しています。
+codespace-template は、[codespacegen](https://github.com/taka1156/codespacegen)・GitHub Actions・導入用 Shell Script を組み合わせて Dev Container テンプレートを管理・配布するためのリポジトリです。そのままテンプレートを使うだけでなく、**Fork して自分専用のテンプレート集を構築**できます。ローカルの VS Code と GitHub Codespaces の両方を想定しています。
 
 **テンプレートの利用側で `codespacegen` をインストールする必要はありません。** このリポジトリに配置した Shell Script を実行し、言語を選ぶだけで設定をプロジェクトへ取り込めます。
 
@@ -61,7 +61,7 @@ Fork は元リポジトリから独立しているため、言語・イメージ
 ## 全体構成
 
 ```text
-DevContainer Kit（ソースブランチ：master）
+codespace-template（ソースブランチ：master）
 ├── codespacegen.json            テンプレート生成設定
 ├── .github/workflows/           GitHub Actions
 └── scripts/
@@ -69,7 +69,7 @@ DevContainer Kit（ソースブランチ：master）
           |
           | GitHub Actions / codespacegen
           v
-DevContainer Kit（配布ブランチ：dist）
+codespace-template（配布ブランチ：dist）
 └── sample_devcontainer/
     ├── <言語A>/
     ├── <言語B>/
@@ -83,7 +83,7 @@ DevContainer Kit（配布ブランチ：dist）
     └── ... その他の生成ファイル
 ```
 
-**役割分担：** `codespacegen` は設定を生成し、DevContainer Kit はテンプレートを管理・配布し、Shell Script は選択したテンプレートをプロジェクトへ導入します。
+**役割分担：** `codespacegen` は設定を生成し、codespace-template はテンプレートを管理・配布し、Shell Script は選択したテンプレートをプロジェクトへ導入します。
 
 `codespacegen` は Dev Container の設定生成を担当し、このリポジトリは生成済みテンプレートの配布を担当します。GitHub Actions はテンプレートの生成・公開を自動化するほか、ベースイメージのバージョンを定期的に確認します。実際の実行間隔や更新処理は Workflow の設定に従います。
 
@@ -97,7 +97,7 @@ DevContainer Kit（配布ブランチ：dist）
 
 ## リポジトリ名について
 
-コマンド内の URL は現在の `taka1156/codespace-template` を参照しています。**DevContainer Kit** はプロジェクト名です。GitHub リポジトリ名を変更した場合は URL とスクリプトの参照先も更新してください。
+コマンド内の URL は現在の `taka1156/codespace-template` を参照しています。**codespace-template** はプロジェクト名です。GitHub リポジトリ名を変更した場合は URL とスクリプトの参照先も更新してください。
 
 ## 関連プロジェクト
 
