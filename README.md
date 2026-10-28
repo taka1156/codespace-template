@@ -1,4 +1,4 @@
-# DevContainer Kit
+# codespace-template
 
 [日本語](./README.ja.md)
 
