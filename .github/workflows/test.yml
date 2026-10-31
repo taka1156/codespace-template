@@ -1,0 +1,42 @@
+name: Test scripts
+
+on:
+  pull_request:
+    paths:
+      - "scripts/**"
+      - ".github/workflows/test-scripts.yml"
+  push:
+    branches: [master]
+    paths:
+      - "scripts/**"
+      - ".github/workflows/test-scripts.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-scripts-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  go-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: scripts
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: scripts/go.mod
+          cache: false
+
+      - name: gofmt
+        run: test -z "$(gofmt -l .)"
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go test
+        run: go test -race -count=1 ./...
