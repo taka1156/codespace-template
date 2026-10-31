@@ -37,10 +37,14 @@
       "runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash"
     },
     {
-      "profileName": "python",
-      "image": "python:3.15-slim",
+      "profileName": "vite+",
+      "image": "ubuntu:26.04",
+      "linuxPackages": [
+        "tar"
+      ],
+      "runCommand": "curl -fsSL https://vite.plus | VP_HOME=/opt/vite-plus bash && mkdir -p /usr/local/bin && for f in /opt/vite-plus/bin/*; do ln -sf \"$f\" \"/usr/local/bin/$(basename \"$f\")\"; done",
       "vscodeExtensions": [
-        "ms-python.python"
+        "oxc.oxc-vscode"
       ]
     },
     {
@@ -48,14 +52,6 @@
       "image": "node:26-slim",
       "vscodeExtensions": [
         "biomejs.biome"
-      ]
-    },
-    {
-      "profileName": "node:eslint",
-      "image": "node:26-slim",
-      "vscodeExtensions": [
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode"
       ]
     },
     {
@@ -92,14 +88,6 @@
         "binutils",
         "libc6-dev"
       ]
-    },
-    {
-      "profileName": "node:zenn",
-      "image": "node:26-slim",
-      "vscodeExtensions": [
-        "zenn.zenn-preview"
-      ],
-      "runCommand": "yarn global add zenn-cli textlint markdownlint"
     }
   ]
 }
