@@ -38,11 +38,7 @@
     },
     {
       "profileName": "vite+",
-      "image": "ubuntu:26.04",
-      "linuxPackages": [
-        "tar"
-      ],
-      "runCommand": "curl -fsSL https://vite.plus | VP_HOME=/opt/vite-plus bash && mkdir -p /usr/local/bin && for f in /opt/vite-plus/bin/*; do ln -sf \"$f\" \"/usr/local/bin/$(basename \"$f\")\"; done",
+      "image": "ghcr.io/voidzero-dev/vite-plus:1.4.0",
       "vscodeExtensions": [
         "oxc.oxc-vscode"
       ]
