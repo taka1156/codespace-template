@@ -1,4 +1,3 @@
-// check_image_updates checks container registries (Docker Hub and GHCR) for updated image versions in codespacegen.json.
 package main
 
 import (
@@ -44,31 +43,32 @@ type registryToken struct {
 	Token string `json:"token"`
 }
 
+type nodeRelease struct {
+	Version string `json:"version"`
+	LTS     any    `json:"lts"`
+}
+
 var httpClient = &http.Client{}
 
-// テスト時に差し替えられるよう、ベース URL は変数にしている。
 var (
-	hubBase  = "https://hub.docker.com"
-	ghcrBase = "https://ghcr.io"
+	hubBase     = "https://hub.docker.com"
+	ghcrBase    = "https://ghcr.io"
+	nodeDistURL = "https://nodejs.org/dist/index.json"
 )
 
-// imageRef はイメージ指定(例: node:26-slim / ghcr.io/voidzero-dev/vite-plus:1.4.0)を分解したもの。
 type imageRef struct {
-	registry string // "docker.io" / "ghcr.io" など
-	repo     string // レジストリ内のリポジトリ名(例: library/node, voidzero-dev/vite-plus)
-	name     string // 元の表記のイメージ名(タグなし)。更新後のイメージ名の組み立てに使う
+	registry string
+	repo     string
+	name     string
 	tag      string
 }
 
-// parseImage はタグ付きのイメージ指定を分解する。
-// タグがない指定とダイジェスト指定(@sha256:...)は対象外として false を返す。
 func parseImage(img string) (imageRef, bool) {
 	if img == "" || strings.Contains(img, "@") {
 		return imageRef{}, false
 	}
 	slash := strings.LastIndex(img, "/")
 	colon := strings.LastIndex(img, ":")
-	// localhost:5000/foo のように、ポート番号のコロンをタグの区切りと取り違えない
 	if colon == -1 || colon < slash {
 		return imageRef{}, false
 	}
@@ -87,8 +87,6 @@ func parseImage(img string) (imageRef, bool) {
 	return imageRef{registry: registry, repo: repo, name: name, tag: tag}, true
 }
 
-// httpGet は GET して本文とヘッダーを返す。200 以外はエラーにする
-// (以前は 404 などでも空の結果として扱われ、「最新です」と誤判定していた)。
 func httpGet(url string, headers map[string]string) ([]byte, http.Header, error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -141,8 +139,6 @@ func getDockerHubTags(repo string, maxPages int) ([]string, error) {
 
 var nextLinkRe = regexp.MustCompile(`<([^>]+)>\s*;\s*rel="next"`)
 
-// getRegistryTags は OCI Distribution API で匿名にタグ一覧を取得する(GHCR の公開イメージ向け)。
-// タグは更新順ではなく辞書順で返るため、ページを辿って全件取得する。
 func getRegistryTags(base, repo string, maxPages int) ([]string, error) {
 	body, _, err := httpGet(fmt.Sprintf("%s/token?scope=repository:%s:pull", base, repo), nil)
 	if err != nil {
@@ -225,7 +221,61 @@ func versionGreater(a, b []int) bool {
 	return false
 }
 
-func findLatestTag(currentTag string, available []string) string {
+type tagFilter func(parsedTag) bool
+
+var nodeLTSCache map[int]bool
+
+func nodeLTSMajors() (map[int]bool, error) {
+	if nodeLTSCache != nil {
+		return nodeLTSCache, nil
+	}
+	body, _, err := httpGet(nodeDistURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch Node.js releases: %w", err)
+	}
+	var rels []nodeRelease
+	if err := json.Unmarshal(body, &rels); err != nil {
+		return nil, fmt.Errorf("failed to parse Node.js releases: %w", err)
+	}
+	majors := make(map[int]bool)
+	for _, r := range rels {
+		if name, ok := r.LTS.(string); !ok || name == "" {
+			continue
+		}
+		v := strings.TrimPrefix(r.Version, "v")
+		major, err := strconv.Atoi(strings.SplitN(v, ".", 2)[0])
+		if err != nil {
+			continue
+		}
+		majors[major] = true
+	}
+	if len(majors) == 0 {
+		return nil, fmt.Errorf("no LTS releases found in Node.js release list")
+	}
+	nodeLTSCache = majors
+	return majors, nil
+}
+
+func ltsFilter(ref imageRef) (tagFilter, error) {
+	if ref.registry != "docker.io" {
+		return nil, nil
+	}
+	switch ref.repo {
+	case "library/node":
+		majors, err := nodeLTSMajors()
+		if err != nil {
+			return nil, err
+		}
+		return func(p parsedTag) bool { return majors[p.version[0]] }, nil
+	case "library/ubuntu":
+		return func(p parsedTag) bool {
+			return len(p.version) >= 2 && p.version[0]%2 == 0 && p.version[1] == 4
+		}, nil
+	}
+	return nil, nil
+}
+
+func findLatestTag(currentTag string, available []string, filter tagFilter) string {
 	cur, ok := parseTag(currentTag)
 	if !ok {
 		return currentTag
@@ -238,6 +288,9 @@ func findLatestTag(currentTag string, available []string) string {
 			continue
 		}
 		if p.suffix != cur.suffix || len(p.version) != len(cur.version) {
+			continue
+		}
+		if filter != nil && !filter(p) {
 			continue
 		}
 		if versionGreater(p.version, bestVersion) {
@@ -285,7 +338,16 @@ func main() {
 			continue
 		}
 
-		latestTag := findLatestTag(ref.tag, tags)
+		filter, err := ltsFilter(ref)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "[warn] %v\n", err)
+			continue
+		}
+		if filter != nil {
+			fmt.Fprintln(os.Stderr, "  (LTS only)")
+		}
+
+		latestTag := findLatestTag(ref.tag, tags, filter)
 		if latestTag != ref.tag {
 			newImg := ref.name + ":" + latestTag
 			updates[img] = newImg

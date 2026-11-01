@@ -19,7 +19,7 @@ func TestParseImage(t *testing.T) {
 		{"someuser/app:1.2", imageRef{"docker.io", "someuser/app", "someuser/app", "1.2"}, true},
 		{"ghcr.io/voidzero-dev/vite-plus:1.4.0", imageRef{"ghcr.io", "voidzero-dev/vite-plus", "ghcr.io/voidzero-dev/vite-plus", "1.4.0"}, true},
 		{"localhost:5000/foo:1", imageRef{"localhost:5000", "foo", "localhost:5000/foo", "1"}, true},
-		{"localhost:5000/foo", imageRef{}, false}, // ポートのコロンをタグと取り違えない
+		{"localhost:5000/foo", imageRef{}, false},
 		{"node", imageRef{}, false},
 		{"node@sha256:abc", imageRef{}, false},
 		{"", imageRef{}, false},
@@ -34,11 +34,10 @@ func TestParseImage(t *testing.T) {
 
 func TestFindLatestTagGHCR(t *testing.T) {
 	tags := []string{"1", "1.4", "1.4.0", "1.4.1", "1.5.0", "1.10.0", "latest", "pr-2313", "sha-abcdef", "2"}
-	if got := findLatestTag("1.4.0", tags); got != "1.10.0" {
-		t.Errorf("got %s, want 1.10.0", got) // 辞書順ではなく数値で比較する
+	if got := findLatestTag("1.4.0", tags, nil); got != "1.10.0" {
+		t.Errorf("got %s, want 1.10.0", got)
 	}
-	// 桁数の違うタグ(1.4 や 2)には移らない
-	if got := findLatestTag("1.4", tags); got != "1.4" {
+	if got := findLatestTag("1.4", tags, nil); got != "1.4" {
 		t.Errorf("got %s, want 1.4", got)
 	}
 }
@@ -59,7 +58,6 @@ func TestGetRegistryTagsPaginationAndAuth(t *testing.T) {
 				return
 			}
 			if r.URL.Query().Get("last") == "" {
-				// 相対パスの Link で次ページを案内する
 				w.Header().Set("Link", `</v2/voidzero-dev/vite-plus/tags/list?last=1.4.0&n=1000>; rel="next"`)
 				fmt.Fprint(w, `{"name":"voidzero-dev/vite-plus","tags":["1","1.4","1.4.0"]}`)
 				return
@@ -124,7 +122,74 @@ func TestGetDockerHubTags(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}
-	if latest := findLatestTag("26-slim", got); latest != "27-slim" {
+	if latest := findLatestTag("26-slim", got, nil); latest != "27-slim" {
 		t.Errorf("latest = %s, want 27-slim", latest)
+	}
+}
+
+func TestNodeLTSFilter(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `[
+			{"version":"v27.1.0","lts":false},
+			{"version":"v26.2.0","lts":"Xenon"},
+			{"version":"v26.0.0","lts":false},
+			{"version":"v25.9.0","lts":false},
+			{"version":"v24.11.0","lts":"Krypton"}
+		]`)
+	}))
+	defer srv.Close()
+
+	oldURL, oldCache := nodeDistURL, nodeLTSCache
+	nodeDistURL, nodeLTSCache = srv.URL, nil
+	defer func() { nodeDistURL, nodeLTSCache = oldURL, oldCache }()
+
+	filter, err := ltsFilter(imageRef{registry: "docker.io", repo: "library/node"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	tags := []string{"24-slim", "25-slim", "26-slim", "27-slim", "28-slim"}
+	if got := findLatestTag("24-slim", tags, filter); got != "26-slim" {
+		t.Errorf("got %s, want 26-slim", got)
+	}
+	if got := findLatestTag("26-slim", tags, filter); got != "26-slim" {
+		t.Errorf("got %s, want 26-slim", got)
+	}
+}
+
+func TestNodeLTSFetchError(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer srv.Close()
+
+	oldURL, oldCache := nodeDistURL, nodeLTSCache
+	nodeDistURL, nodeLTSCache = srv.URL, nil
+	defer func() { nodeDistURL, nodeLTSCache = oldURL, oldCache }()
+
+	if _, err := ltsFilter(imageRef{registry: "docker.io", repo: "library/node"}); err == nil {
+		t.Error("expected error when Node.js release list is unavailable")
+	}
+}
+
+func TestUbuntuLTSFilter(t *testing.T) {
+	filter, err := ltsFilter(imageRef{registry: "docker.io", repo: "library/ubuntu"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	tags := []string{"24.04", "24.10", "25.04", "25.10", "26.04", "26.10", "27.04"}
+	if got := findLatestTag("24.04", tags, filter); got != "26.04" {
+		t.Errorf("got %s, want 26.04", got)
+	}
+}
+
+func TestNoLTSFilterForOtherImages(t *testing.T) {
+	for _, ref := range []imageRef{
+		{registry: "docker.io", repo: "library/python"},
+		{registry: "ghcr.io", repo: "voidzero-dev/vite-plus"},
+	} {
+		filter, err := ltsFilter(ref)
+		if err != nil || filter != nil {
+			t.Errorf("ltsFilter(%+v) = %v, %v; want nil, nil", ref, filter != nil, err)
+		}
 	}
 }
