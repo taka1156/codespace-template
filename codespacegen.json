@@ -38,10 +38,14 @@
     },
     {
       "profileName": "vite+",
-      "image": "ubuntu:26.04",
-      "linuxPackages": ["libatomic1"],
-      "runCommand": "curl -fsSL https://vite.plus | bash || { find / -path '*vite-plus*' -name upgrade.log -exec cat {} + 2>/dev/null; exit 1; }; BIN=\"$(ls -d \"$HOME/.vite-plus/bin\" \"$HOME/.local/share/vite-plus/bin\" 2>/dev/null | head -n1)\"; [ -n \"$BIN\" ] || { echo 'vp bin dir not found'; exit 1; }; for f in \"$BIN\"/*; do ln -sf \"$f\" \"/usr/local/bin/$(basename \"$f\")\"; done; vp --version",
-      "vscodeExtensions": ["oxc.oxc-vscode"]
+      "image": "ubuntu:26.10",
+      "vscodeExtensions": [
+        "oxc.oxc-vscode"
+      ],
+      "runCommand": "curl -fsSL https://vite.plus | bash || { find / -path '*vite-plus*' -name upgrade.log -exec cat {} + 2\u003e/dev/null; exit 1; }; BIN=\"$(ls -d \"$HOME/.vite-plus/bin\" \"$HOME/.local/share/vite-plus/bin\" 2\u003e/dev/null | head -n1)\"; [ -n \"$BIN\" ] || { echo 'vp bin dir not found'; exit 1; }; for f in \"$BIN\"/*; do ln -sf \"$f\" \"/usr/local/bin/$(basename \"$f\")\"; done; vp --version",
+      "linuxPackages": [
+        "libatomic1"
+      ]
     },
     {
       "profileName": "node:biome",
