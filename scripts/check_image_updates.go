@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -301,6 +302,66 @@ func findLatestTag(currentTag string, available []string, filter tagFilter) stri
 	return bestTag
 }
 
+// groupOrder は langs の並び順を決めるグループ（profileName の ":" より前）の順番。
+// ツール系 → ネイティブ言語 → その他の言語 → JavaScript/Node 系 の順に並べる。
+var groupOrder = []string{
+	"claude sandbox",
+	"gcc",
+	"rust",
+	"go",
+	"moonbit",
+	"python",
+	"node",
+	"vite-plus",
+}
+
+// imageGroups は profileName が groupOrder に無いときに、イメージ名からグループを推測するための表。
+var imageGroups = map[string]string{
+	"library/gcc":    "gcc",
+	"library/rust":   "rust",
+	"library/golang": "go",
+	"library/node":   "node",
+	"library/python": "python",
+}
+
+// langGroupRank はプロファイルの並び順の重みを返す。どのグループにも当てはまらないものは末尾に回す。
+func langGroupRank(lang Lang) int {
+	base := strings.ToLower(strings.TrimSpace(strings.SplitN(lang.ProfileName, ":", 2)[0]))
+	for i, g := range groupOrder {
+		if base == g {
+			return i
+		}
+	}
+	if ref, ok := parseImage(lang.Image); ok && ref.registry == "docker.io" {
+		if g, ok := imageGroups[ref.repo]; ok {
+			for i, name := range groupOrder {
+				if name == g {
+					return i
+				}
+			}
+		}
+	}
+	return len(groupOrder)
+}
+
+// sortLangs は langs をグループ順に並べ替える。同じグループ内では元の順番を保つ。
+// 並び順が変わったら true を返す。
+func sortLangs(langs []Lang) bool {
+	before := make([]string, len(langs))
+	for i, l := range langs {
+		before[i] = l.ProfileName
+	}
+	sort.SliceStable(langs, func(i, j int) bool {
+		return langGroupRank(langs[i]) < langGroupRank(langs[j])
+	})
+	for i, l := range langs {
+		if before[i] != l.ProfileName {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 	configPath := "codespacegen.json"
 	if len(os.Args) > 1 {
@@ -357,15 +418,17 @@ func main() {
 		}
 	}
 
-	if len(updates) == 0 {
-		fmt.Println("All images are up to date.")
-		return
-	}
-
 	for i := range config.Langs {
 		if newImg, ok := updates[config.Langs[i].Image]; ok {
 			config.Langs[i].Image = newImg
 		}
+	}
+
+	reordered := sortLangs(config.Langs)
+
+	if len(updates) == 0 && !reordered {
+		fmt.Println("All images are up to date.")
+		return
 	}
 
 	out, err := json.MarshalIndent(config, "", "  ")
@@ -378,8 +441,17 @@ func main() {
 		log.Fatalf("failed to write config: %v", err)
 	}
 
-	fmt.Println("\nUpdated codespacegen.json:")
+	fmt.Printf("\nUpdated %s:\n", configPath)
+	if len(updates) == 0 {
+		fmt.Println("  All images are up to date.")
+	}
 	for old, nw := range updates {
 		fmt.Printf("  %s  ->  %s\n", old, nw)
+	}
+	if reordered {
+		fmt.Println("  langs reordered by group:")
+		for _, l := range config.Langs {
+			fmt.Printf("    - %s\n", l.ProfileName)
+		}
 	}
 }
