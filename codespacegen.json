@@ -15,6 +15,18 @@
   },
   "langs": [
     {
+      "profileName": "Claude Sandbox",
+      "image": "ubuntu:26.04",
+      "vscodeExtensions": [
+        "anthropic.claude-code"
+      ],
+      "runCommand": "curl -fsSL https://claude.ai/install.sh | bash && ln -sf \"$HOME/.local/bin/claude\" /usr/local/bin/claude && claude --version",
+      "linuxPackages": [
+        "curl",
+        "ca-certificates"
+      ]
+    },
+    {
       "profileName": "go",
       "image": "golang:1.27",
       "vscodeExtensions": [
