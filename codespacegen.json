@@ -37,12 +37,23 @@
       "runCommand": "curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash"
     },
     {
-      "profileName": "vite+",
+      "profileName": "vite-plus",
       "image": "ubuntu:26.04",
       "vscodeExtensions": [
         "oxc.oxc-vscode"
       ],
       "runCommand": "curl -fsSL https://vite.plus | bash || { find / -path '*vite-plus*' -name upgrade.log -exec cat {} + 2\u003e/dev/null; exit 1; }; BIN=\"$(ls -d \"$HOME/.vite-plus/bin\" \"$HOME/.local/share/vite-plus/bin\" 2\u003e/dev/null | head -n1)\"; [ -n \"$BIN\" ] || { echo 'vp bin dir not found'; exit 1; }; for f in \"$BIN\"/*; do ln -sf \"$f\" \"/usr/local/bin/$(basename \"$f\")\"; done; vp --version",
+      "linuxPackages": [
+        "libatomic1"
+      ]
+    },
+    {
+      "profileName": "vite-plus:node-ommit",
+      "image": "node:26-slim",
+      "vscodeExtensions": [
+        "oxc.oxc-vscode"
+      ],
+      "runCommand": "curl -fsSL https://vite.plus | bash || { find / -path '*vite-plus*' -name upgrade.log -exec cat {} + 2\u003e/dev/null; exit 1; }; BIN=\"$(ls -d \"$HOME/.vite-plus/bin\" \"$HOME/.local/share/vite-plus/bin\" 2\u003e/dev/null | head -n1)\"; [ -n \"$BIN\" ] || { echo 'vp bin dir not found'; exit 1; }; for f in \"$BIN\"/*; do ln -sf \"$f\" \"/usr/local/bin/$(basename \"$f\")\"; done; vp env off node || { echo 'vp env off node failed'; exit 1; }; vp --version",
       "linuxPackages": [
         "libatomic1"
       ]
