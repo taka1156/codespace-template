@@ -15,18 +15,6 @@
   },
   "langs": [
     {
-      "profileName": "claude-sandbox",
-      "image": "ubuntu:26.04",
-      "vscodeExtensions": [
-        "anthropic.claude-code"
-      ],
-      "runCommand": "curl -fsSL https://claude.ai/install.sh | bash && ln -sf \"$HOME/.local/bin/claude\" /usr/local/bin/claude && claude --version",
-      "linuxPackages": [
-        "curl",
-        "ca-certificates"
-      ]
-    },
-    {
       "profileName": "gcc",
       "image": "ubuntu:26.10",
       "vscodeExtensions": [
@@ -110,6 +98,18 @@
       "runCommand": "curl -fsSL https://vite.plus | bash || { find / -path '*vite-plus*' -name upgrade.log -exec cat {} + 2\u003e/dev/null; exit 1; }; BIN=\"$(ls -d \"$HOME/.vite-plus/bin\" \"$HOME/.local/share/vite-plus/bin\" 2\u003e/dev/null | head -n1)\"; [ -n \"$BIN\" ] || { echo 'vp bin dir not found'; exit 1; }; for f in \"$BIN\"/*; do ln -sf \"$f\" \"/usr/local/bin/$(basename \"$f\")\"; done; vp env off node || { echo 'vp env off node failed'; exit 1; }; vp --version",
       "linuxPackages": [
         "libatomic1"
+      ]
+    },
+    {
+      "profileName": "claude-sandbox",
+      "image": "ubuntu:26.04",
+      "vscodeExtensions": [
+        "anthropic.claude-code"
+      ],
+      "runCommand": "curl -fsSL https://claude.ai/install.sh | bash \u0026\u0026 ln -sf \"$HOME/.local/bin/claude\" /usr/local/bin/claude \u0026\u0026 claude --version",
+      "linuxPackages": [
+        "curl",
+        "ca-certificates"
       ]
     }
   ]
