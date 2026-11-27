@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vscode/main/extensions/configuration-editing/schemas/devContainer.vscode.schema.json",
+  "name": "node:astro",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "dockerComposeFile": "docker-compose.yaml",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "MS-CEINTL.vscode-language-pack-ja",
+        "streetsidesoftware.code-spell-checker",
+        "usernamehw.errorlens",
+        "astro-build.astro-vscode",
+        "biomejs.biome",
+        "formulahendry.auto-rename-tag",
+        "yoavbls.pretty-ts-errors",
+        "capsaskey.vscode-vanilla-extract"
+      ]
+    }
+  }
+}
